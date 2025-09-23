@@ -1,0 +1,1 @@
+minikube -p ${K8S_CTX} start --memory 12288

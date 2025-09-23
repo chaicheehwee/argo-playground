@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: arguments-parametersx-
+spec:
+  entrypoint: print-message
+  templates:
+  - name: print-message
+    steps:
+    - - name: message1
+        template: print-message
+    - - name: message2
+        template: print-message2
+  # Parameters can be passed/overridden via the argo CLI.
+  # To override the printed message, run `argo submit` with the -p option:
+  # $ argo submit examples/arguments-parameters.yaml -p message="goodbye world"
+  arguments:
+    parameters:
+    - name: message
+      value: "???hello world"
+    - name: message2
+      value: "goodbye earth"
+  templates:
+  - name: print-message
+    inputs:
+      parameters:
+      - name: message
+    container:
+      image: busybox
+      command: [echo]
+      args: ["{{inputs.parameters.message}}"]
+  - name: print-message2
+    inputs:
+      parameters:
+      - name: message2
+    container:
+      image: busybox
+      command: [echo]
+      args: ["{{inputs.parameters.message2}}"]

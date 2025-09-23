@@ -1,0 +1,1 @@
+minikube -p ${K8S_CTX} stop && minikube -p ${K8S_CTX} delete

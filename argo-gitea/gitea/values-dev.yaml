@@ -1,0 +1,49 @@
+# global:
+namespace: gitea
+
+valkey-cluster:
+  enabled: false
+valkey:
+  enabled: false
+postgresql:
+  enabled: true
+  primary.persistence.size: 1Gi
+postgresql-ha:
+  enabled: false
+
+persistence:
+  enabled: true
+  storageClass: standard
+  size: 1Gi
+
+gitea:
+  config:
+    database:
+      DB_TYPE: postgres
+    session:
+      PROVIDER: memory
+    cache:
+      ADAPTER: memory
+    queue:
+      TYPE: level
+  admin:
+    username: admin
+    password: password
+    email: admin@dev.me
+
+deployment:
+  env:
+    # - name: GITEA__DEFAULT__RUN_MODE
+    #   value: dev
+    - name: GITEA__REPOSITORY__ENABLE_PUSH_CREATE_USER
+      value: "true"
+    - name: GITEA__REPOSITORY__DEFAULT_PUSH_CREATE_PRIVATE
+      value: "false"
+
+
+service:
+  http:
+    type: NodePort
+    nodePort: 30001
+    externalPort: 30001
+    externalHost: gitea.dev.me

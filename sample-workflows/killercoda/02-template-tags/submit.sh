@@ -1,0 +1,1 @@
+argo submit --serviceaccount argo-workflow --watch template-tag-workflow.yaml

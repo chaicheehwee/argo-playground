@@ -1,0 +1,7 @@
+Options
+1. Create a default secret in the namespace where the workflow is deployed (see default-secret.yaml)
+
+Verify that there is a ServiceAccount "argo" in the "argo" namespace
+Verify that there is a Role called "argo"
+Verify that there is a Rolebinding called "argo-rolebinding"
+https://raw.githubusercontent.com/argoproj/argo-workflows/main/manifests/namespace-install/workflow-controller-rbac/workflow-controller-role.yaml

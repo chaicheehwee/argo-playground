@@ -1,0 +1,6 @@
+server:
+  serviceType: NodePort
+  serviceNodePort: 32746
+  # https://stackoverflow.com/questions/74921037/cannot-run-argo-workflow-from-the-ui
+  extraArgs: [--auth-mode=server]
+  

@@ -1,0 +1,1 @@
+kubectl --context ${K8S_CTX} -n argo port-forward service/argo-server 2746:2746
