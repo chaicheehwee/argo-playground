@@ -10,20 +10,20 @@ kubectl --context ${K8S_CTX} apply -n argo -f namespace-install.yaml
 # kubectl --context ${K8S_CTX} delete -n argo -f "https://github.com/argoproj/argo-workflows/releases/download/${ARGO_WORKFLOWS_VERSION}/namespace-install.yaml"
 
 
-kubectl --context ${K8S_CTX} patch deployment \
-argo-server \
--n argo \
---type='json' \
--p='[{"op":
-"replace",
-"path":
-"/spec/template/spec/containers/0/args",
-"value":
-[
-"server",
-"--namespaced",
-"--auth-mode=server"
-]}]'
+# kubectl --context ${K8S_CTX} patch deployment \
+# argo-server \
+# -n argo \
+# --type='json' \
+# -p='[{"op":
+# "replace",
+# "path":
+# "/spec/template/spec/containers/0/args",
+# "value":
+# [
+# "server",
+# "--namespaced",
+# "--auth-mode=server"
+# ]}]'
 
 kubectl --context ${K8S_CTX} patch service \
 argo-server \
@@ -39,7 +39,7 @@ argo-server \
 "add",
 "path":
 "/spec/ports/0/nodePort",
-"value": 32580
+"value": 32647
 }
 ]'
 

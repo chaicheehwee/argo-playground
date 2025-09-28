@@ -1,0 +1,77 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  # generateName: add-pet-
+  name: petstore
+spec:
+  serviceAccountName: runner
+  templates:
+    - name: http-add-pet
+      activeDeadlineSeconds: 60 # terminate workflow after 10 seconds
+      retryStrategy:
+        limit: 1
+      inputs:
+        parameters:
+          - name: path
+          - name: petId
+      http:
+        
+        timeoutSeconds: 60 # Default 30
+
+        url: "{{workflow.parameters.url}}{{inputs.parameters.path}}"
+        method: "POST" # Default GET
+        headers:
+          - name: "accept"
+            value: "application/json"
+          - name: "Content-Type"
+            value: "application/json"
+        # Template will succeed if evaluated to true, otherwise will fail
+        # Available variables:
+        #  request.body: string, the request body
+        #  request.headers: map[string][]string, the request headers
+        #  response.url: string, the request url
+        #  response.method: string, the request method
+        #  response.statusCode: int, the response status code
+        #  response.body: string, the response body
+        #  response.headers: map[string][]string, the response headers
+        successCondition: "response.statusCode == 200" # available since v3.3
+        # Change request body
+        body: |
+          {
+            "id": {{inputs.parameters.petId}},
+            "category": {
+              "id": 0,
+              "name": "string"
+            },
+            "name": "hahaha",
+            "photoUrls": [
+              "string"
+            ],
+            "tags": [
+              {
+                "id": 0,
+                "name": "string"
+              }
+            ],
+            "status": "available"
+          } 
+    - name: http-get-pet
+      activeDeadlineSeconds: 60 # terminate workflow after 10 seconds
+      retryStrategy:
+        limit: 2
+      inputs:
+        parameters:
+          - name: path
+          - name: id
+      http:
+        
+        timeoutSeconds: 90 # Default 30
+
+        url: "{{workflow.parameters.url}}{{inputs.parameters.path}}/{{inputs.parameters.id}}"
+        method: "GET" # Default GET
+        headers:
+          - name: "accept"
+            value: "application/json"
+          - name: "Content-Type"
+            value: "application/json"
+        successCondition: "response.statusCode == 200" # available since v3.3

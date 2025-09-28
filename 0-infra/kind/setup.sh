@@ -1,0 +1,1 @@
+KIND_EXPERIMENTAL_PROVIDER=podman kind create cluster --config kind-argotest.yaml

@@ -5,7 +5,7 @@ if [[ "$(uname -s)" != "Darwin" ]]; then
 fi
 
 # Download the binary
-curl -sLO "https://github.com/argoproj/argo-workflows/releases/download/v3.7.1/argo-$ARGO_OS-amd64.gz"
+curl -sLO "https://github.com/argoproj/argo-workflows/releases/download/v3.7.2/argo-$ARGO_OS-amd64.gz"
 
 # Unzip
 gunzip "argo-$ARGO_OS-amd64.gz"

@@ -1,0 +1,140 @@
+# https://raw.githubusercontent.com/argoproj/argo-workflows/refs/heads/main/manifests/quick-start/base/agent-role.yaml
+# https://argo-workflows.readthedocs.io/en/latest/workflow-rbac/
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: agent
+  annotations:
+    workflows.argoproj.io/description: |
+      This is the minimum recommended permissions needed if you want to use the agent, e.g. for HTTP or plugin templates.
+
+      If <= v3.2 you must replace `workflowtasksets/status` with `patch workflowtasksets`.
+rules:
+  - apiGroups:
+      - argoproj.io
+    resources:
+      - workflowtasksets
+    verbs:
+      - list
+      - watch
+  - apiGroups:
+      - argoproj.io
+    resources:
+      - workflowtasksets/status
+    verbs:
+      - patch
+---
+# https://argo-workflows.readthedocs.io/en/latest/workflow-rbac/
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: executor
+rules:
+  - apiGroups:
+      - argoproj.io
+    resources:
+      - workflowtaskresults
+    verbs:
+      - create
+      - patch
+---
+# Subset of argo-server-role, for UI usage
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: ui
+rules:
+- apiGroups:
+  - argoproj.io
+  resources:
+  - eventsources
+  - sensors
+  - workflows
+  - workfloweventbindings
+  - workflowtemplates
+  - cronworkflows
+  - cronworkflows/finalizers
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+  - update
+  - patch
+  - delete
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: runner
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: operator
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: runner-agent-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: agent
+subjects:
+- kind: ServiceAccount
+  name: runner
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: runner-executor-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: executor
+subjects:
+- kind: ServiceAccount
+  name: runner
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: operator-ui-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ui
+subjects:
+- kind: ServiceAccount
+  name: operator
+---
+# The supplied "argo" service account requires the agent role. 
+# The workflow controller uses this service account to patch "workflowtasksets/status"
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: argo-agent-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: agent
+subjects:
+- kind: ServiceAccount
+  name: argo
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: runner.service-account-token
+  annotations:
+    kubernetes.io/service-account.name: runner
+type: kubernetes.io/service-account-token
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: operator.service-account-token
+  annotations:
+    kubernetes.io/service-account.name: operator
+type: kubernetes.io/service-account-token

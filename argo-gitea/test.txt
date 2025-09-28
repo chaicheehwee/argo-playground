@@ -1,0 +1,14 @@
+[Service]
+Delegate=yes
+
+# Default podman limit is 4096
+# Disable limit
+[containers]
+pids_limit = -1
+[Service]
+Delegate=yes
+
+# Default podman limit is 4096
+# Disable limit
+[containers]
+pids_limit = -1

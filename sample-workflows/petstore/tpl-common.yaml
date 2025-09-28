@@ -1,0 +1,42 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: common
+spec:
+  serviceAccountName: runner
+  templates:
+    - name: random-int
+      script:
+        image: python:alpine3.6
+        command: [python]
+        source: |
+          import random
+          i = random.randint(1, 99999)
+          print(i)
+    - name: print-message
+      inputs:
+        parameters:
+        - name: message
+      container:
+        image: registry.gitlab.com/gitlab-ci-utils/curl-jq:latest
+        command: [sh, -c]
+        args:
+          - echo "{{inputs.parameters.message}}"
+    - name: jq
+      inputs:
+        parameters:
+        - name: json
+      script:
+        image: registry.gitlab.com/gitlab-ci-utils/curl-jq:latest
+        command: [sh, -c]
+        source: |
+          echo '{{inputs.parameters.json}}' | jq .id
+    - name: base64
+      inputs:
+        parameters:
+        - name: input
+      script:
+        image: registry.gitlab.com/gitlab-ci-utils/curl-jq:latest
+        command: [sh, -c]
+        source: |
+          echo '{{inputs.parameters.input}}' | base64
