@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: print-abc-invoker
+  namespace: argo
+spec:
+  serviceAccountName: runner
+  templates:
+    - name: invoke-print-abc
+      inputs:
+        parameters:
+          - name: messageA
+          - name: messageB
+          - name: messageC
+      steps:
+      - - name: something
+          arguments:
+            parameters:
+              - name: messageA
+                value: "{{inputs.parameters.messageA}}"
+              - name: messageB
+                value: "{{inputs.parameters.messageB}}"
+              - name: messageC
+                value: "{{inputs.parameters.messageC}}"
+          templateRef: 
+            name: print-abc
+            template: print-abc

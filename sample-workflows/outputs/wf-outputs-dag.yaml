@@ -1,0 +1,55 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  namespace: argo
+  generateName: outputs-dag-
+spec:
+  serviceAccountName: runner
+  entrypoint: diamond
+  templates:
+  - name: echo
+    inputs:
+      parameters:
+        - name: message
+    container:
+      image: alpine
+      command: [ echo ]
+      args: [
+        '{{inputs.parameters.message}}'
+      ]
+    outputs:
+      parameters:
+      - name: message
+        value: "{{inputs.parameters.message}}"
+
+
+  - name: diamond
+    outputs:
+      parameters:
+        - name: a
+          valueFrom:
+            expression: "tasks['A'].outputs.parameters.message"
+        - name: d
+          valueFrom:
+            expression: "tasks['D'].outputs.parameters.message"
+    dag:
+      tasks:
+      - name: A
+        arguments:
+          parameters: [{name: message, value: A}]
+        template: echo
+      - name: B
+        dependencies: [A]
+        arguments:
+          parameters: [{name: message, value: B}]
+        template: echo
+      - name: C
+        dependencies: [A]
+        arguments:
+          parameters: [{name: message, value: C}]
+        template: echo
+      - name: D
+        dependencies: [B, C]
+        arguments:
+          parameters: [{name: message, value: D}]
+        template: echo

@@ -1,0 +1,16 @@
+apiVersion: v1
+data:
+  # Base64 encode 5IICgET9dlbt6LYo3qAB
+  accesskey: NUlJQ2dFVDlkbGJ0NkxZbzNxQUI=
+  # Base64 encode 714VrdEEWKSjZZHbTGKnNV0XFnJx9z5Kc4uPJxCH
+  secretkey: NzE0VnJkRUVXS1NqWlpIYlRHS25OVjBYRm5KeDl6NUtjNHVQSnhDSA==
+  # accesskey: 
+  # secretkey: 714VrdEEWKSjZZHbTGKnNV0XFnJx9z5Kc4uPJxCH
+  
+  # accesskey: GznlD3U5yKjFLsX29Xwv
+  # secretkey: lFqNzf1DWnk7vI7q2bQEYjIPWxeBQKLhSQiTlRCj
+kind: Secret
+metadata:
+  creationTimestamp: null
+  name: my-minio-creds
+  namespace: argo

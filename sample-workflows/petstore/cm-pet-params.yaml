@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: params
+  name: pet-params
   namespace: argo
   labels:
     # This label is required for the informer to detect this ConfigMap

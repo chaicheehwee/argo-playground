@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: argo
+  # If you want to use this config map by default, name it "artifact-repositories". Otherwise, you can provide a reference to a
+  # different config map in `artifactRepositoryRef.configMap`.
+  name: artifact-repositories
+  # name: my-artifact-repository
+  annotations:
+    # v3.0 and after - if you want to use a specific key, put that key into this annotation.
+    # workflows.argoproj.io/default-artifact-repository: default-v1-s3-artifact-repository
+    workflows.argoproj.io/default-artifact-repository: minio-artifact-repository
+data:
+  minio-artifact-repository: |
+    s3:
+      bucket: argo-bucket
+      endpoint: minio.dev.me:32000
+      insecure: true
+      accessKeySecret:
+        name: my-minio-creds
+        key: accesskey
+      secretKeySecret:
+        name: my-minio-creds
+        key: secretkey
+  git-artifact-repository: |
+    git:
+      repo: "gitea.dev.me"
+      revision: "main"
+      usernameSecret:
+        name: github-credentials
+        key: username
+      passwordSecret:
+        name: github-credentials
+        key: password
+      depth: 1

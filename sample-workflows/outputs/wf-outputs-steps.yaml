@@ -1,0 +1,86 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  namespace: argo
+  generateName: outputs-steps-
+  labels:
+    workflows.argoproj.io/archive-strategy: "false"
+  annotations:
+    workflows.argoproj.io/description: |
+      This is a simple output workflow example.
+spec:
+  serviceAccountName: runner
+  # Entrypoint is required for workflow
+  entrypoint: entry
+
+  templates:
+  - name: entry
+    steps:
+    - - name: one
+        template: echo
+        arguments:
+          parameters:
+            - name: message
+              value: one
+    - - name: two
+        template: echo
+        arguments:
+          parameters:
+            - name: message
+              value: two
+        # Can't specify outputs in a step
+        # Failed to parse workflow: json: unknown field "outputs" 
+        # outputs:
+        #   parameters:
+        #   - name: one
+        #     value: one
+    outputs:
+      parameters:
+        - name: uno
+
+          # Using "value" fails         
+          # output parameters must have a valueFrom specified
+          # value: entry
+          
+          valueFrom:
+          
+            # Syntax error, do not need "{{}}"
+            # a map key must be a quoted string, a number, a identifier, or an expression enclosed in parentheses (unexpected token Bracket("{")) (1:2) | {{steps['one'].outputs.parameters.hello}} | .^
+            # expression: "{{steps['one'].outputs.parameters.hello}}"
+
+            # This works
+            expression: "(steps['one'].outputs.parameters.message + '!')"
+        - name: duo
+          valueFrom:
+            expression: "(steps['two'].outputs.parameters.message + '?')"
+
+  - name: echo
+    inputs:
+      parameters:
+        - name: message
+    container:
+      image: alpine
+      command: [ echo ]
+      args: [
+        '{{inputs.parameters.message}}'
+      ]
+    outputs:
+      parameters:
+      - name: message
+        value: "{{inputs.parameters.message}}"
+  - name: hello
+    container:
+      image: busybox
+      command: [echo]
+      args: ["hello"]
+    outputs:
+      parameters:
+      - name: hello
+        value: hello
+
+  # This template won't be run since it is not the entrypoint and is not referenced in hello-world template
+  - name: goodbye
+    container:
+      image: busybox
+      command: [echo]
+      args: ["goodbye"]

@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  namespace: argo
+  name: step-demo-2
+  # labels:
+  #   workflows.argoproj.io/archive-strategy: "false"
+  annotations:
+    workflows.argoproj.io/description: |
+      This is a simple hello goodbye example.
+spec:
+  serviceAccountName: runner
+  templates:
+  - name: test
+    steps:
+    - - name: goodbye1
+        template: goodbye
+      - name: hello1
+        template: hello
+    - - name: hello2
+        template: hello
+      - name: goodbye2
+        template: goodbye
+      - name: hello3
+        template: hello
+      - name: goodbye3
+        template: goodbye
+    outputs:
+      parameters:
+        - name: message
+          valueFrom:
+            raw: uh huh
+            default: ok
+  - name: hello
+    container:
+      image: busybox
+      command: [echo]
+      args: ["hello"]
+  - name: goodbye
+    container:
+      image: busybox
+      command: [echo]
+      args: ["goodbye"]

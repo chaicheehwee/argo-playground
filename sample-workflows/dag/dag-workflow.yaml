@@ -4,6 +4,7 @@ metadata:
   generateName: dag-diamond
   namespace: argo
 spec:
+  serviceAccountName: runner
   entrypoint: diamond
   templates:
   - name: diamond

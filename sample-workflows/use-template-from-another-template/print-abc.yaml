@@ -1,0 +1,44 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: print-abc
+  namespace: argo
+spec:
+  serviceAccountName: runner
+  templates:
+    - name: print-abc
+      inputs:
+        parameters:
+          - name: messageA
+          - name: messageB
+          - name: messageC
+      steps:
+      - - name: printA
+          arguments:
+            parameters:
+            - name: message
+              # The following both work
+              # inputs.parameters.messageA
+              # workflow.parameters.messageA
+              value: "{{inputs.parameters.messageA}}"
+          template: print-message
+      - - name: printB
+          arguments:
+            parameters:
+              - name: message
+                value: "{{workflow.parameters.messageB}}"
+          template: print-message
+      - - name: printC
+          arguments:
+            parameters:
+              - name: message
+                value: "{{workflow.parameters.messageC}}"
+          template: print-message
+    - name: print-message
+      inputs:
+        parameters:
+          - name: message
+      container:
+        image: busybox
+        command: [echo]
+        args: ["{{inputs.parameters.message}}"]

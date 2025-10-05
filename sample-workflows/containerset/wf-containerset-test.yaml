@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  namespace: argo
+  generateName: containerset-test-
+  labels:
+    workflows.argoproj.io/archive-strategy: "false"
+  annotations:
+    workflows.argoproj.io/description: |
+      This is a simple containerset example.
+spec:
+  serviceAccountName: runner
+  # Entrypoint is required for workflow
+  entrypoint: my-containerSet
+  templates:
+    - name: my-containerSet
+      containerSet:
+        containers:
+        - name: hello
+          container:
+            image: busybox
+            command: [echo]
+            args: ["hello"]
+        - name: goodbye
+          container:
+            image: busybox
+            command: [echo]
+            args: ["goodbye"]

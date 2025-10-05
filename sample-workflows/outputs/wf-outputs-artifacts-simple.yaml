@@ -1,0 +1,45 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  namespace: argo
+  generateName: outputs-artifacts-simple-
+  labels:
+    workflows.argoproj.io/archive-strategy: "false"
+  annotations:
+    workflows.argoproj.io/description: |
+      This is a simple output workflow example.
+spec:
+  serviceAccountName: runner
+  # Entrypoint is required for workflow
+  entrypoint: entry
+
+  templates:
+  - name: entry
+    steps:
+    - - name: producer
+        template: produce-artifact
+    - - name: consumer
+        template: consume-artifact
+        arguments:
+          artifacts:
+            - name: message
+              from: "{{steps.producer.outputs.artifacts.message}}"
+  - name: produce-artifact
+    container:
+      image: busybox
+      command: [ sh, -c ]
+      args: ["echo 123abc > /tmp/message.txt"]
+    outputs:
+      artifacts:
+        - name: message
+          path: /tmp/message.txt
+  - name: consume-artifact
+    container:
+      image: busybox
+      command: [ sh, -c ]
+      args: ["cat {{inputs.artifacts.message.path}}"]
+    inputs:
+      artifacts:
+        - name: message
+          path: /tmp/message2.txt
+

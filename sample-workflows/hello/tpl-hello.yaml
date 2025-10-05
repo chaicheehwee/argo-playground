@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  namespace: argo
+  name: hello
+  labels:
+    workflows.argoproj.io/archive-strategy: "false"
+  annotations:
+    workflows.argoproj.io/description: |
+      This is a simple hello workflow template example.
+spec:
+  serviceAccountName: runner
+  # Entrypoint is required for workflow
+  entrypoint: hello
+  templates:
+  - name: hello
+    container:
+      image: busybox
+      command: [echo]
+      args: ["hello"]
+  # This template won't be run since it is not the entrypoint and is not referenced in hello-world template
+  - name: goodbye
+    container:
+      image: busybox
+      command: [echo]
+      args: ["goodbye"]

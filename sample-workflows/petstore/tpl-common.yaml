@@ -1,6 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: WorkflowTemplate
 metadata:
+  namespace: argo
   name: common
 spec:
   serviceAccountName: runner

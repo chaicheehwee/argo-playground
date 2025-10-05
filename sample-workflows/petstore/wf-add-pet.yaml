@@ -17,6 +17,14 @@ spec:
       # inputs:
 
       steps:
+        - - name: debug-base-url
+            templateRef:
+              name: common
+              template: print-message
+            arguments:
+              parameters:
+              - name: message
+                value: "{{workflow.parameters.url}}"
         - - name: generate-pet-id
             templateRef:
               name: common
@@ -31,25 +39,20 @@ spec:
                   value: "/api/v3/pet"
                 - name: petId
                   value: "{{steps.generate-pet-id.outputs.result}}"
-        - - name: debug
-            templateRef:
-              name: common
-              template: print-message
-            arguments:
-              parameters:
-              - name: message
-                value: "{{steps.add-pet.outputs.result}}"
-        - - name: extract-pet-id
-            templateRef:
-              name: common
-              template: jq
-            arguments:
-              parameters:
-                - name: json
-                  value: "{{steps.add-pet.outputs.result}}"
 
+        # - - name: extract-pet-id
+        #     templateRef:
+        #       name: common
+        #       template: jq
+        #     arguments:
+        #       parameters:
+        #         - name: json
+        #           value: "{{steps.add-pet.outputs.result}}"
+        # - - name: get-pet
+        #     templateRef:
+        #       name: petstore
+        #       template: http-get-pet
         - - name: get-pet
-            # template: http-get-pet
             templateRef:
               name: petstore
               template: http-get-pet
@@ -58,4 +61,4 @@ spec:
                 - name: path
                   value: "/api/v3/pet"
                 - name: id
-                  value: "{{steps.extract-pet-id.outputs.result}}"
+                  value: "{{=jsonpath(steps['add-pet'].outputs.result, '$.id')}}"
