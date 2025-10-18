@@ -1,0 +1,4 @@
+argocd app create helm-guestbook --repo http://gitea.dev.me:30001/admin/git-repos.git \
+--path helm-nginx \
+--dest-namespace default \
+--dest-server https://kubernetes.default.svc 
